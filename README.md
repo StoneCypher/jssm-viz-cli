@@ -13,7 +13,7 @@ Run the machines with [jssm](https://github.com/StoneCypher/jssm), or visualize 
 
 ## Example
 
-With the FSL machine
+Assuming that in the file `traffic-light.fsl` we have the FSL machine
 
 ```fsl
 machine_name: "Traffic light example";
@@ -22,11 +22,25 @@ Green 'next' => Yellow 'next' => Red 'next' => Green;
 [Red Yellow Green] ~> Off -> Red;
 ```
 
-You will produce the following image
+We can run the command
+
+```bash
+jssm-viz -s traffic-light.fsl
+```
+
+You will produce the following image as SVG, in `traffic-light.svg`:
 
 ![](https://github.com/StoneCypher/jssm-viz-cli/blob/master/docs/traffic-light-example.svg)
 
-Which is actually the SVG
+
+
+
+
+<br/><br/>
+
+## What does the SVG code look like?
+
+This is the above example:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -114,5 +128,12 @@ Which is actually the SVG
 
 
 <br/><br/>
+
+## What if I want a PNG, JPEG, etc?
+
+Any converter should do.  I like [cairo](https://cairosvg.org/) at the CLI, [sharp](https://github.com/lovell/sharp) inside node, or [svgtopng.com](https://svgtopng.com/) for quick one-offs.
+
+Github action coming ***Real Soon Now*** &trade;
+
 
 Don't mind the mess: this just got started Dec 28 of 2019.  Usable momentarily
