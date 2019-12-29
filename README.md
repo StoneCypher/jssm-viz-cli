@@ -131,9 +131,16 @@ This is the above example:
 
 ## What if I want a PNG, JPEG, etc?
 
-Any converter should do.  I like [cairo](https://cairosvg.org/) at the CLI, [sharp](https://github.com/lovell/sharp) inside node, or [svgtopng.com](https://svgtopng.com/) for quick one-offs.
+To write four images and two pieces of source to disk, run
+
+```bash
+jssm-viz -s traffic-light.fsl --svg --png --jpeg --gif --dot --tree
+```
+
+This will produce `traffic-light.svg`, `traffic-light.png`, `traffic-light.jpeg`, `traffic-light.gif`, and two special cases, `traffic-light.dot`, which is the intermediate stage that's run through [graphviz](https://www.graphviz.org/) to produce the final graph, and a parse tree in `jssm`'s internal format, in `json`.
+
+If one or more of the format flags are provided, those are the formats which will be produced.  If none are provided, `svg` will be assumed.
 
 Github action coming ***Real Soon Now*** &trade;
 
-
-Don't mind the mess: this just got started Dec 28 of 2019.  Usable momentarily
+Don't mind the mess: this just got started Dec 28 of 2019.  Usable momentarily...
