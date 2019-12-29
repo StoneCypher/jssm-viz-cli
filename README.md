@@ -141,6 +141,8 @@ This will produce `traffic-light.svg`, `traffic-light.png`, `traffic-light.jpeg`
 
 If one or more of the format flags are provided, those are the formats which will be produced.  If none are provided, `svg` will be assumed.
 
+There is also a `--jpg`, which produces JPEGs with the extension `.jpg`.  Internally it's treated like a different format, so, if you specify both `--jpg` and `--jpeg`, you'll get two images.
+
 Github action coming ***Real Soon Now*** &trade;
 
 Don't mind the mess: this just got started Dec 28 of 2019.  Usable momentarily...
