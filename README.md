@@ -38,6 +38,129 @@ You will produce the following image as SVG, in `traffic-light.svg`:
 
 <br/><br/>
 
+## What if I want a PNG, JPEG, etc?
+
+To write four images and two pieces of source to disk, run
+
+```bash
+jssm-viz -s traffic-light.fsl --svg --png --jpeg --gif --dot --tree
+```
+
+This will produce `traffic-light.svg`, `traffic-light.png`, `traffic-light.jpeg`, `traffic-light.gif`, and two special cases, `traffic-light.dot`, which is the intermediate stage that's run through [graphviz](https://www.graphviz.org/) to produce the final graph, and a parse tree in `jssm`'s internal format, in `json`.
+
+If one or more of the format flags are provided, those are the formats which will be produced.  If none are provided, `svg` will be assumed.
+
+There is also a `--jpg`, which produces JPEGs with the extension `.jpg`.  Internally it's treated like a different format, so, if you specify both `--jpg` and `--jpeg`, you'll get two images.
+
+Images will be placed in the same directory as the source, unless otherwise specified.  This can be relevant if you're using globs to pick up multiple source files, by example.
+
+
+
+
+
+<br/><br/>
+
+## What if I want to render multiple machines?
+
+The source flag `-s` takes a [glob](https://github.com/isaacs/node-glob#glob-primer), which can be a filename, but doesn't have to be.
+
+By example, if you want to render all machines from the current directory downwards into both PNGs and SVGs, try
+
+```bash
+jssm-viz -s ./**/*.fsl --png --svg
+```
+
+
+
+
+
+<br/><br/>
+
+## What if I want to control where the output goes?
+
+Putting images where the source is isn't always desirable, and when you have a lot of machines, moving them after the render can be tedious.
+
+`jssm-viz-cli` offers three output placement modes:
+
+* In-place
+* To directory
+* To in-place directory
+* To sourcenamed directory 
+
+
+
+
+<br/>
+
+### In-place
+
+```bash
+jssm-viz -s foo.fsl --inplace
+```
+
+`In-place`, the default mode, produces an image with the source's filename and the relevant extension, in the same place that the source was found.
+
+
+
+
+
+<br/>
+
+### To directory
+
+```bash
+jssm-viz -s foo.fsl --todir ./renders
+```
+
+`To directory` allows you to specify a single directory that will contain all output. In this example, the directory `renders` would contain output (or be created if it didn't already exist.)
+
+However, sometimes this causes filename conflicts, when different machines in different directories have the same filename.  
+
+Two modes help avoid those conflicts:
+
+
+
+
+
+<br/>
+
+### To in-place directory
+
+```bash
+jssm-viz -s foo.fsl --toinplacedir ./renders
+```
+
+`To in-place directory` will produce a path tree mimicing the original path tree under the target directory for matching `fsl` files, and place images there.  For example, `a/b/c/foo.fsl` aimed at `renders` will produce `renders/a/b/c/foo.svg`.
+
+
+
+
+
+<br/>
+
+### To sourcenamed directory
+
+```bash
+jssm-viz -s foo.fsl --tosourcenameddir ./renders
+```
+
+`To sourcenamed directory` will produce, for `a/b/c/foo.fsl`, `a--b--c--foo.svg`, which allows a flat directory to contain most patterns in a non-colliding easily [slug](https://www.npmjs.com/package/slug)ged way.
+
+
+
+
+<br/><br/>
+
+## What if I want this automated?
+
+Github action coming ***Real Soon Now*** &trade;
+
+
+
+
+
+<br/><br/>
+
 ## What does the SVG code look like?
 
 This is the above example:
@@ -123,26 +246,6 @@ This is the above example:
 </svg>
 ```
 
-
-
-
-
 <br/><br/>
-
-## What if I want a PNG, JPEG, etc?
-
-To write four images and two pieces of source to disk, run
-
-```bash
-jssm-viz -s traffic-light.fsl --svg --png --jpeg --gif --dot --tree
-```
-
-This will produce `traffic-light.svg`, `traffic-light.png`, `traffic-light.jpeg`, `traffic-light.gif`, and two special cases, `traffic-light.dot`, which is the intermediate stage that's run through [graphviz](https://www.graphviz.org/) to produce the final graph, and a parse tree in `jssm`'s internal format, in `json`.
-
-If one or more of the format flags are provided, those are the formats which will be produced.  If none are provided, `svg` will be assumed.
-
-There is also a `--jpg`, which produces JPEGs with the extension `.jpg`.  Internally it's treated like a different format, so, if you specify both `--jpg` and `--jpeg`, you'll get two images.
-
-Github action coming ***Real Soon Now*** &trade;
 
 Don't mind the mess: this just got started Dec 28 of 2019.  Usable momentarily...
