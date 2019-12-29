@@ -1,3 +1,5 @@
+(not yet ready for use)
+
 # jssm-viz-cli
 Command line visualizer for [fsl machines](https://fsl.tools/), producing SVG flowcharts.
 
