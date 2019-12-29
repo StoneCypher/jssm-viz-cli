@@ -43,16 +43,30 @@ You will produce the following image as SVG, in `traffic-light.svg`:
 To write four images and two pieces of source to disk, run
 
 ```bash
-jssm-viz -s traffic-light.fsl --svg --png --jpeg --gif --dot --tree
+jssm-viz -s traffic-light.fsl --svg --png --jpeg --webp --dot --tree
 ```
 
-This will produce `traffic-light.svg`, `traffic-light.png`, `traffic-light.jpeg`, `traffic-light.gif`, and two special cases, `traffic-light.dot`, which is the intermediate stage that's run through [graphviz](https://www.graphviz.org/) to produce the final graph, and a parse tree in `jssm`'s internal format, in `json`.
+This will produce `traffic-light.svg`, `traffic-light.png`, `traffic-light.jpeg`, `traffic-light.webp`, and two special cases, `traffic-light.dot`, which is the intermediate stage that's run through [graphviz](https://www.graphviz.org/) to produce the final graph, and a parse tree in `jssm`'s internal format, in `json`.
 
 If one or more of the format flags are provided, those are the formats which will be produced.  If none are provided, `svg` will be assumed.
 
 There is also a `--jpg`, which produces JPEGs with the extension `.jpg`.  Internally it's treated like a different format, so, if you specify both `--jpg` and `--jpeg`, you'll get two images.
 
 Images will be placed in the same directory as the source, unless otherwise specified.  This can be relevant if you're using globs to pick up multiple source files, by example.
+
+
+
+
+
+<br/><br/>
+
+## What if I want to set the render width?
+
+For the non-vector non-source formats, it may be useful to control the render width.  `jssm-viz` will attempt to set a sensible default, but if you prefer to handle it yourself, this would create a 1234 px wide render of the machine `foo`:
+
+```bash
+jssm-viz -s foo.fsl --png --width 1234
+```
 
 
 
