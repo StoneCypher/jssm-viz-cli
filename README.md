@@ -11,6 +11,24 @@ Run the machines with [jssm](https://github.com/StoneCypher/jssm), or visualize 
 
 
 
+## Getting started
+
+Easiest approach is to install globally, which creates a command-line wrapper
+
+```bash
+npm install -g jssm-viz
+```
+
+And now you can do things like
+
+```bash
+jssm-viz -s traffic-light.fsl --png
+```
+
+
+
+
+
 <br/><br/>
 
 ## Example
