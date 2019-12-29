@@ -13,6 +13,8 @@ See the [fsl.tools](https://fsl.tools/) website 😊
 
 
 
+<br/><br/>
+
 ## Getting started
 
 Easiest approach is to install globally, which creates a command-line wrapper
