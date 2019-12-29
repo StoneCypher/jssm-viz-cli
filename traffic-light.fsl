@@ -1,0 +1,4 @@
+machine_name: "Traffic light example";
+
+Green 'next' => Yellow 'next' => Red 'next' => Green;
+[Red Yellow Green] ~> Off -> Red;
