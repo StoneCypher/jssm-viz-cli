@@ -1,15 +1,19 @@
 (not yet ready for use)
 
 # jssm-viz-cli
-Command line visualizer for [fsl machines](https://fsl.tools/), producing SVG flowcharts.
+Command line visualizer for [fsl machines](https://fsl.tools/), producing flowcharts in SVG, PNG, DOT, or other formats.
 
 Run the machines with [jssm](https://github.com/StoneCypher/jssm), or visualize within code (instead of at the CLI) with [jssm-viz](https://github.com/StoneCypher/jssm-viz-cli).
 
 [Try it online](https://stonecypher.github.io/jssm-viz-demo/graph_explorer.html)
 
+See the [fsl.tools](https://fsl.tools/) website 😊
 
 
 
+
+
+<br/><br/>
 
 ## Getting started
 
