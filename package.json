@@ -52,10 +52,9 @@
     "rollup": "^1.27.14",
     "rollup-plugin-ignore": "^1.0.5",
     "tslib": "^1.10.0",
-    "typescript": "^3.7.4"
-  },
-  "dependencies": {
+    "typescript": "^3.7.4",
     "sharp": "^0.23.4",
     "viz.js": "^2.1.2"
-  }
+  },
+  "dependencies": {}
 }
