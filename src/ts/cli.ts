@@ -10,6 +10,8 @@ const app = require('commander');
 import { version }           from '../../package.json';
 import { fsl_to_svg_string } from 'jssm-viz';
 
+import { file_type }         from './types';
+
 
 
 
