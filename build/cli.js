@@ -14787,7 +14787,11 @@ app
     .option('--todir <dir>', 'Output to a specified directory')
     .option('--toinplacedir <dir>', 'Output a matching tree from source to a specified directory')
     .option('--tosourcenameddir <dir>', 'Output slugged names to a specified directory');
-function run() {
-    console.log('it ran');
+async function render(fsl_code) {
+    const svg_code = await jssmViz_cjs_4(fsl_code);
+    return svg_code;
+}
+async function run() {
+    console.log(await render('hi -> hello -> hi_there;'));
 }
 run();

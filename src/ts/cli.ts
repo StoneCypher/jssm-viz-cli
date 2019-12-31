@@ -47,8 +47,8 @@ async function render(fsl_code: string): Promise<string> {
 
 
 
-function run() {
-  console.log('it ran');
+async function run() {
+  console.log(await render('hi -> hello -> hi_there;'));
 }
 
 

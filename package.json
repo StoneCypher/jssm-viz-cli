@@ -7,12 +7,13 @@
     "doc": "docs"
   },
   "bin": {
-    "jssm-viz": "dist/bin.js"
+    "jssm-viz": "dist/cli.js"
   },
   "scripts": {
     "clean": "rimraf -f build/ && rimraf -f dist/ && rimraf -f docs/ && mkdir build && mkdir dist && mkdir docs",
+    "dist": "cp build/cli.js dist/cli.js",
     "rollup": "rollup -c",
-    "build": "npm run clean && npm run rollup",
+    "build": "npm run clean && npm run rollup && npm run dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
