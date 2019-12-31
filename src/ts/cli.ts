@@ -13,6 +13,8 @@ import { fsl_to_svg_string } from 'jssm-viz';
 import Viz from 'viz.js';
 import { Module, render } from 'viz.js/full.render.js';
 import * as sharp from 'sharp';
+import { file_type }         from './types';
+
 
 const viz = new Viz({ Module, render });
 
