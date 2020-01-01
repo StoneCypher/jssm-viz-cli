@@ -1,6 +1,6 @@
 {
   "name": "jssm-viz-cli",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "jssm-viz-cli is a command-line interface for jssm-viz, a flowchart vizualizer for fsl finite state machines, using jssm to render FSMs. ",
   "main": "dist/cli.js",
   "directories": {
@@ -14,7 +14,7 @@
     "dist": "cp build/cli.js dist/cli.js",
     "rollup": "rollup -c",
     "build": "npm run clean && npm run rollup && npm run dist",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo Temporarily skipped"
   },
   "repository": {
     "type": "git",
