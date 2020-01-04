@@ -1,19 +1,20 @@
 {
   "name": "jssm-viz-cli",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "jssm-viz-cli is a command-line interface for jssm-viz, a flowchart vizualizer for fsl finite state machines, using jssm to render FSMs. ",
-  "main": "dist/cli.js",
+  "main": "dist/js/cli.js",
   "directories": {
     "doc": "docs"
   },
   "bin": {
-    "jssm-viz": "dist/cli.js"
+    "jssm-viz": "dist/js/cli.js"
   },
   "scripts": {
-    "clean": "rimraf -f build/ && rimraf -f dist/ && rimraf -f docs/ && mkdir build && mkdir dist && mkdir docs",
-    "dist": "cp build/cli.js dist/cli.js",
-    "rollup": "rollup -c",
-    "build": "npm run clean && npm run rollup && npm run dist",
+    "clean": "rimraf -f build/ && rimraf -f dist/ && rimraf -f docs/ && mkdir build && mkdir dist && cd dist && mkdir js && cd .. && mkdir docs",
+    "docs": "cp src/svg/traffic-light-example.svg docs/",
+    "dist": "cp build/src/ts/cli.* dist/js/",
+    "typescript": "tsc --build tsconfig.json",
+    "build": "npm run clean && npm run typescript && npm run dist && npm run docs",
     "test": "echo Temporarily skipped"
   },
   "repository": {
@@ -41,16 +42,10 @@
   },
   "homepage": "https://github.com/StoneCypher/jssm-viz-cli#readme",
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^11.0.0",
-    "@rollup/plugin-json": "^4.0.1",
-    "@rollup/plugin-node-resolve": "^6.0.0",
+    "@types/node": "^13.1.4",
     "commander": "^4.0.1",
     "jssm-viz": "^1.6.2",
     "rimraf": "^3.0.0",
-    "rollup": "^1.27.14",
-    "rollup-plugin-ignore": "^1.0.5",
-    "rollup-plugin-replace": "^2.2.0",
-    "rollup-plugin-typescript2": "^0.25.3",
     "typescript": "^3.7.4"
   }
 }
