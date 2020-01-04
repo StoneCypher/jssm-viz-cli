@@ -42,6 +42,7 @@
   },
   "homepage": "https://github.com/StoneCypher/jssm-viz-cli#readme",
   "devDependencies": {
+    "@types/node": "^13.1.4",
     "commander": "^4.0.1",
     "jssm-viz": "^1.6.2",
     "rimraf": "^3.0.0",
