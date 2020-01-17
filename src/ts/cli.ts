@@ -23,13 +23,14 @@ app
 
   .version(version)
 
-  .option('-s, --source <glob>',      'The input source file, as a glob, such as foo.fsl or ./**/*.fsl')
+  .option('-s, --source <glob>',      'The input source file, as a glob, such as foo.fsl or ./**/*.fsl\n')
 
-  .option('-w, --width <integer>',    'Set raster render width, in pixels')
+  .option('-w, --width <integer>',    'Set raster render width, in pixels\n')
 
+  .option('-d, --debug',              'Log extensively to console')
   .option('-v, --verbose',            'Log to console normally')
   .option('-q, --quiet',              'Only log to console on error')
-  .option('-z, --silent',             'Do not log to console at all')
+  .option('-z, --silent',             'Do not log to console at all\n')
 
   .option('--svg',                    'Produce output in SVG format (default if no formats specified)')
   .option('--png',                    'Produce output in PNG format')
@@ -38,7 +39,7 @@ app
   .option('--gif',                    'Produce output in GIF format')
   .option('--webp',                   'Produce output in WEBP format')
   .option('--tree',                   'Produce output in JSSM\'s internal parse tree format, with a .tree extension')
-  .option('--dot',                    'Produce output in GraphViz\'s DOT format')
+  .option('--dot',                    'Produce output in GraphViz\'s DOT format\n')
 
   .option('--inplace',                'Output where source was found (default)')
   .option('--todir <dir>',            'Output to a specified directory')
@@ -81,6 +82,13 @@ function english_list(list) {
 
 
 
+const present_on_app = (test_items) =>
+  test_items.filter(ti => app[ti] !== undefined);
+
+
+
+
+
 function validate_args() {
 
   if (!(app.source)) {
@@ -88,16 +96,14 @@ function validate_args() {
     process.exit(1);
   }
 
-  const dirs   = ['inplace', 'todir', 'toinplacedir', 'tosourcenameddir', 'topipe'],
-        dirsOn = dirs.filter(d => app[d] !== undefined);
-
+  const dirsOn = present_on_app(['inplace', 'todir', 'toinplacedir', 'tosourcenameddir', 'topipe']);
   if (dirsOn.length > 1) {
     console.log(`${english_list(dirsOn)} are mutually exclusive.  Please choose at most one.`);
     process.exit(1);
   }
 
-  const noise = ['verbose', 'quiet', 'silent'];
-  if (noise.filter(d => app[d] !== undefined).length > 1) {
+  const noise = ['debug', 'verbose', 'quiet', 'silent'];
+  if (present_on_app(noise).length > 1) {
     console.log(`${english_list(noise)} are mutually exclusive.  Please choose at most one.`);
     process.exit(1);
   }
@@ -107,7 +113,7 @@ function validate_args() {
   }
 
   const imgFormats = ['png', 'svg', 'jpg', 'jpeg', 'gif', 'webp', 'tree', 'dot'];
-  if (imgFormats.filter(d => app[d] !== undefined).length === 0) {
+  if (present_on_app(imgFormats).length === 0) {
     app.svg = true;
   }
 
@@ -117,10 +123,22 @@ function validate_args() {
 
 
 
+function outputTarget(origFname, kind) {
+  return origFname + '.' + kind; // lol TODO FIXME
+}
+
+
+
+
+
 async function output({ fname, data }) {
 
-  console.log(` - Rendering ${fname}...`);
+  console.log(` - Rendering ${fname} to svg...`);
   const svg = await render(data);
+
+  if (app.svg) {
+    fs.writeFileSync(outputTarget(fname, 'svg'), svg);
+  }
 
 }
 
