@@ -1,0 +1,3 @@
+machine_name: "Matter states example";
+
+solid 'melt' <-> 'freeze' liquid 'boil' <-> 'condense' gas 'decohere' <-> 'cohere' plasma;

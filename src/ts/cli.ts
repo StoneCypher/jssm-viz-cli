@@ -36,7 +36,7 @@ const at      = (s, i)              => parseInt(`${s}`.padStart(3, '0')[i]),
       cols    = (nt_pairs)          => nt_pairs.map( pair => col(pair[0], pair[1]) ).join(''),
       if_text = (label, text, tcol) => text? (label + col(tcol, text)) : '';
 
-const error_text = text => if_text(col(501, 'Error: '), text, 412),
+const error_text = text => if_text(col(501, 'Error: '), text, 412) + `${col(441, " (see ")}${col(141, "jssm-viz --help")}${col(441, " for details)")}`,
       debug_text = text => if_text(col(113, 'Debug: '), text, 12),
       quiet_text = text => if_text(col(131, 'Quiet: '), text, 21);
 
@@ -46,7 +46,7 @@ const error_text = text => if_text(col(501, 'Error: '), text, 412),
 
 const render_message = fname =>
   app.color
-    ? `${col(222, ' - ')}${col(440, "Rendering")} ${col(420, fname)}`
+    ? `${col(222, ' - ')}${col(123, "Rendering")} ${col(135, fname)}`
     : ` - Rendering ${fname}`;
 
 
@@ -218,7 +218,9 @@ async function output({ fname, data }) {
 async function run() {
 
   validate_args();
-  verbose_log(`jssm-viz: targetting ${english_list(present_on_app(imgFormats))}`);
+
+  console.log('');
+  verbose_log(`${col(345, "jssm-viz: ")}${col(135, 'targetting ')}${col(24, english_list(present_on_app(imgFormats)))}`);
 
   const files = glob.sync(app.source);
 
@@ -230,7 +232,9 @@ async function run() {
        .map(output);
 
   await Promise.all(files);
-  verbose_log(col(40, '\nFinished'));
+
+  console.log('');
+  verbose_log(`${col(345, "jssm-viz: ")}${col(135, `finished successfully`)}`);
 
 }
 

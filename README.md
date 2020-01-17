@@ -32,6 +32,24 @@ jssm-viz -s traffic-light.fsl --png
 
 
 
+<br/><br/>
+
+### Install problems with `sharp.js`
+
+The underlying `svg` converter, `sharp.js`,
+[only exists for certain platforms](https://sharp.pixelplumbing.com/install#prebuilt-binaries).
+This includes most common platforms.
+
+1. If you're on Windows, make sure `node` is 64-bit.
+1. On any platform, make sure you're on `node` versions 8, 12, or 13.
+1. You'll need [python](https://www.python.org/downloads/)
+
+If any of these are a problem, [the jssm-viz github action](https://github.com/StoneCypher/jssm-viz-action)
+can do it for you with no hassle.
+
+
+
+
 
 <br/><br/>
 
@@ -123,7 +141,7 @@ Putting images where the source is isn't always desirable, and when you have a l
 * In-place
 * To directory
 * To in-place directory
-* To sourcenamed directory 
+* To sourcenamed directory
 
 
 
@@ -152,7 +170,7 @@ jssm-viz -s foo.fsl --todir ./renders
 
 `To directory` allows you to specify a single directory that will contain all output. In this example, the directory `renders` would contain output (or be created if it didn't already exist.)
 
-However, sometimes this causes filename conflicts, when different machines in different directories have the same filename.  
+However, sometimes this causes filename conflicts, when different machines in different directories have the same filename.
 
 Two modes help avoid those conflicts:
 
