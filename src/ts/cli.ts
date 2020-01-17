@@ -29,19 +29,20 @@ const imgFormats = ['png', 'svg', 'jpg', 'jpeg', 'gif', 'webp', 'tree', 'dot'],
 
 
 
-const at      = (s, i)        => parseInt(`${s}`.padStart(3, '0')[i]),
-      fg_from = colstr        => (colstr === false)? '' : a2c.fg.getRgb(at(colstr, 0), at(colstr, 1), at(colstr, 2)),
-      cx      = (color, text) => fg_from(color) + text + a2c.reset;
+const at      = (s, i)              => parseInt(`${s}`.padStart(3, '0')[i]),
+      fg_from = colstr              => (colstr === false)? '' : a2c.fg.getRgb(at(colstr, 0), at(colstr, 1), at(colstr, 2)),
+      cx      = (color, text)       => fg_from(color) + text + a2c.reset,
+      col     = (num, text)         => app.color? `${cx(num, text)}` : text,
+      cols    = (nt_pairs)          => nt_pairs.map( pair => col(pair[0], pair[1]) ).join(''),
+      if_text = (label, text, tcol) => text? (label + col(tcol, text)) : '';
 
-const error_text = text => text? (app.color? (`${cx(501, "Error")}${cx(412, `: ${text}`)}`) : `Error: ${text}`) : '',
-      debug_text = text => text? (app.color? (`${cx(113, "Debug")}${cx( 12, `: ${text}`)}`) : `Debug: ${text}`) : '',
-      quiet_text = text => text? (app.color? (`${cx(131, "Quiet")}${cx( 21, `: ${text}`)}`) : `Quiet: ${text}`) : '';
+const error_text = text => if_text(col(501, 'Error: '), text, 412),
+      debug_text = text => if_text(col(113, 'Debug: '), text, 12),
+      quiet_text = text => if_text(col(131, 'Quiet: '), text, 21);
 
 
 
 
-
-const col = (num, text) => app.color? `${cx(num, text)}` : text;
 
 const render_message = fname =>
   app.color
