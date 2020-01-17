@@ -7,8 +7,10 @@
 
 const fs   = require('fs');
 
-const app  = require('commander'),
-      glob = require('glob');
+const glob = require('glob'),
+      app  = require('commander'),
+      a2c  = require('ansi-256-colors');
+
 
 import { version }           from '../../package.json';
 import { fsl_to_svg_string } from 'jssm-viz';
@@ -19,18 +21,62 @@ import { file_type }         from './types';
 
 
 
+const imgFormats = ['png', 'svg', 'jpg', 'jpeg', 'gif', 'webp', 'tree', 'dot'],
+      dirsOn     = ['inplace', 'todir', 'toinplacedir', 'tosourcenameddir', 'topipe'],
+      noise      = ['debug', 'verbose', 'quiet', 'silent'];
+
+
+
+
+
+const at      = (s, i)        => parseInt(`${s}`.padStart(3, '0')[i]),
+      fg_from = colstr        => (colstr === false)? '' : a2c.fg.getRgb(at(colstr, 0), at(colstr, 1), at(colstr, 2)),
+      cx      = (color, text) => fg_from(color) + text + a2c.reset;
+
+const error_text = text => text? (app.color? (`${cx(501, "Error")}${cx(412, `: ${text}`)}`) : `Error: ${text}`) : '',
+      debug_text = text => text? (app.color? (`${cx(113, "Debug")}${cx( 12, `: ${text}`)}`) : `Debug: ${text}`) : '',
+      quiet_text = text => text? (app.color? (`${cx(131, "Quiet")}${cx( 21, `: ${text}`)}`) : `Quiet: ${text}`) : '';
+
+
+
+
+
+const col = (num, text) => app.color? `${cx(num, text)}` : text;
+
+const render_message = fname =>
+  app.color
+    ? `${col(222, ' - ')}${col(440, "Rendering")} ${col(420, fname)}`
+    : ` - Rendering ${fname}`;
+
+
+
+
+
+const log_if      = (text, clause) => clause? process.stdout.write(text + '\n') : true,
+
+      debug_log   = text => log_if(debug_text(text), ['debug'                    ].includes(app.noise_level)),
+      verbose_log = text => log_if(           text , ['debug', 'verbose'         ].includes(app.noise_level)),
+      quiet_log   = text => log_if(quiet_text(text), ['debug', 'verbose', 'quiet'].includes(app.noise_level));
+
+
+
+
+
 app
 
   .version(version)
 
-  .option('-s, --source <glob>',      'The input source file, as a glob, such as foo.fsl or ./**/*.fsl\n')
+  .option('-s, --source <glob>',      'The input source file, as a glob, such as foo.fsl or ./**/*.fsl')
 
-  .option('-w, --width <integer>',    'Set raster render width, in pixels\n')
+  .option('-w, --width <integer>',    'Set raster render width, in pixels')
 
   .option('-d, --debug',              'Log extensively to console')
-  .option('-v, --verbose',            'Log to console normally')
+  .option('-v, --verbose',            'Log to console normally (default)')
   .option('-q, --quiet',              'Only log to console on error')
-  .option('-z, --silent',             'Do not log to console at all\n')
+  .option('-z, --silent',             'Do not log to console at all')
+
+  .option('-c, --color',              'Use console color (default)')
+  .option('-n, --nocolor',            'Do not use console color')
 
   .option('--svg',                    'Produce output in SVG format (default if no formats specified)')
   .option('--png',                    'Produce output in PNG format')
@@ -39,7 +85,7 @@ app
   .option('--gif',                    'Produce output in GIF format')
   .option('--webp',                   'Produce output in WEBP format')
   .option('--tree',                   'Produce output in JSSM\'s internal parse tree format, with a .tree extension')
-  .option('--dot',                    'Produce output in GraphViz\'s DOT format\n')
+  .option('--dot',                    'Produce output in GraphViz\'s DOT format')
 
   .option('--inplace',                'Output where source was found (default)')
   .option('--todir <dir>',            'Output to a specified directory')
@@ -91,31 +137,53 @@ const present_on_app = (test_items) =>
 
 function validate_args() {
 
+  const colors = present_on_app(['color', 'nocolor']);
+  if (colors.length > 1) {
+    console.log(error_text(`${english_list(['color', 'nocolor'])} are mutually exclusive.  Please choose at most one.`));
+    process.exit(1);
+  }
+  if (colors.length === 0) {
+    app.color = true;
+  }
+
+  const noises = present_on_app(noise);
+  if (noises.length > 1) {
+    console.log(`${english_list(noises)} are mutually exclusive.  Please choose at most one.`);
+    process.exit(1);
+  } else if (noises.length === 1) {
+    app.noise_level = noises[0];
+    debug_log(`Noise level: ${app.noise_level}`);
+  } else {
+    debug_log(`No noise level specified; defaulting to verbose`);
+    app.noise_level = 'verbose';
+  }
+
+  const if_colored = colorer => app.color? colorer : ( x => x );
+
   if (!(app.source)) {
-    console.log('Error: must specify a source file or source glob');
+    console.log(error_text("must specify a source file or source glob"));
     process.exit(1);
   }
 
-  const dirsOn = present_on_app(['inplace', 'todir', 'toinplacedir', 'tosourcenameddir', 'topipe']);
-  if (dirsOn.length > 1) {
-    console.log(`${english_list(dirsOn)} are mutually exclusive.  Please choose at most one.`);
+  const uDirsOn = present_on_app(dirsOn);
+  if (uDirsOn.length > 1) {
+    console.log(error_text(`${english_list(dirsOn)} are mutually exclusive.  Please choose at most one.`));
     process.exit(1);
   }
 
-  const noise = ['debug', 'verbose', 'quiet', 'silent'];
-  if (present_on_app(noise).length > 1) {
-    console.log(`${english_list(noise)} are mutually exclusive.  Please choose at most one.`);
-    process.exit(1);
-  }
-
-  if (dirsOn.length === 0) {
+  if (uDirsOn.length === 0) {
+    debug_log(`No directory strategy specified; defaulting to inplace`);
     app.inplace = true;
+  } else {
+    debug_log(`Directory strategy: ${uDirsOn[0]}`);
   }
 
-  const imgFormats = ['png', 'svg', 'jpg', 'jpeg', 'gif', 'webp', 'tree', 'dot'];
   if (present_on_app(imgFormats).length === 0) {
+    debug_log(`No image format(s) specified; defaulting to svg`);
     app.svg = true;
   }
+
+  debug_log(''); // on debug only emit a newline before the work output
 
 }
 
@@ -133,7 +201,7 @@ function outputTarget(origFname, kind) {
 
 async function output({ fname, data }) {
 
-  console.log(` - Rendering ${fname} to svg...`);
+  verbose_log(render_message(fname));
   const svg = await render(data);
 
   if (app.svg) {
@@ -149,12 +217,19 @@ async function output({ fname, data }) {
 async function run() {
 
   validate_args();
-  const files = glob.sync(app.source)
-                    .map(fname => ({fname, data: `${fs.readFileSync(fname)}`}))
-                    .map(output);
+  verbose_log(`jssm-viz: targetting ${english_list(present_on_app(imgFormats))}`);
+
+  const files = glob.sync(app.source);
+
+  if (files.length === 0) {
+    console.log(error_text(`no files found matching source glob ${col(441, app.source)}`))
+  }
+
+  files.map(fname => ({fname, data: `${fs.readFileSync(fname)}`}))
+       .map(output);
 
   await Promise.all(files);
-  console.log('... finished');
+  verbose_log(col(40, '\nFinished'));
 
 }
 
@@ -163,16 +238,3 @@ async function run() {
 
 
 run();
-
-
-
-
-
-// console.log(await render(`
-
-// machine_name: "Traffic light example";
-
-// Green 'next' => Yellow 'next' => Red 'next' => Green;
-// [Red Yellow Green] ~> Off -> Red;
-
-// `));
