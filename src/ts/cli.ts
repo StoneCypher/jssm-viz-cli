@@ -14,9 +14,12 @@ const sharp = require('sharp'),
 
 
 import { version }           from '../../package.json';
-import { fsl_to_svg_string } from 'jssm-viz';
-
 import { file_type }         from './types';
+
+import {
+  fsl_to_svg_string,
+  fsl_to_dot
+} from 'jssm-viz';
 
 
 
@@ -105,18 +108,6 @@ app
   .option('--topipe',                 'Output to pipe 0 (aka cout, stdout)');
 
 app.parse(process.argv);
-
-
-
-
-
-async function render(fsl_code: string): Promise<string> {
-
-  const svg_code: string = await fsl_to_svg_string(fsl_code);
-
-  return svg_code;
-
-}
 
 
 
@@ -246,7 +237,8 @@ async function output({ fname, data }) {
 
   verbose_log(render_message(fname));
 
-  const svg  = await render(data),
+  const svg  = await fsl_to_svg_string(data),
+        dot  = await fsl_to_dot(data),
         sbuf = Buffer.from(svg);
 
   let written = 0;
@@ -254,6 +246,12 @@ async function output({ fname, data }) {
   if (app.svg) {
     fs.writeFileSync(outputTarget(fname, 'svg'), svg);
     verbose_log(render_result(outputTarget(fname, 'svg')));
+    ++written;
+  }
+
+  if (app.dot) {
+    fs.writeFileSync(outputTarget(fname, 'dot'), dot);
+    verbose_log(render_result(outputTarget(fname, 'dot')));
     ++written;
   }
 
