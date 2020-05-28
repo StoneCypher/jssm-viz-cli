@@ -22,7 +22,7 @@ import { file_type }         from './types';
 
 
 
-const rasterFormats = ['png', 'jpg', 'jpeg', 'gif', 'webp'],
+const rasterFormats = ['png', 'jpg', 'jpeg', 'webp'],
       otherFormats  = ['svg', 'tree', 'dot'],
       imgFormats    = [].concat(rasterFormats, otherFormats),
       dirsOn        = ['inplace', 'todir', 'toinplacedir', 'tosourcenameddir', 'topipe'],
@@ -94,7 +94,6 @@ app
   .option('-P, --png',                'Produce output in PNG format')
   .option('-J, --jpg',                'Produce output in JPEG format, with a .jpg extension')
   .option('-E, --jpeg',               'Produce output in JPEG format, with a .jpeg extension')
-  .option('-G, --gif',                'Produce output in GIF format')
   .option('-W, --webp',               'Produce output in WEBP format')
   .option('-T, --tree',               'Produce output in JSSM\'s internal parse tree format, with a .tree extension')
   .option('-D, --dot',                'Produce output in GraphViz\'s DOT format')
