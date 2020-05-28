@@ -22,9 +22,14 @@ import { file_type }         from './types';
 
 
 
-const imgFormats = ['png', 'svg', 'jpg', 'jpeg', 'gif', 'webp', 'tree', 'dot'],
-      dirsOn     = ['inplace', 'todir', 'toinplacedir', 'tosourcenameddir', 'topipe'],
-      noise      = ['debug', 'verbose', 'quiet', 'silent'];
+const rasterFormats = ['png', 'jpg', 'jpeg', 'gif', 'webp'],
+      otherFormats  = ['svg', 'tree', 'dot'],
+      imgFormats    = [].concat(rasterFormats, otherFormats),
+      dirsOn        = ['inplace', 'todir', 'toinplacedir', 'tosourcenameddir', 'topipe'],
+      noise         = ['debug', 'verbose', 'quiet', 'silent'];
+
+type imageFormatsAsTuple = typeof imgFormats; // see https://stackoverflow.com/a/45486495/763127
+type imgFormat           = imageFormatsAsTuple[number];
 
 
 
@@ -206,6 +211,38 @@ function outputTarget(origFname, kind) {
 
 
 
+async function sharp_raster(sbuf, fmt) {
+
+  if (!( imgFormats.includes(fmt) )) {
+    throw new TypeError(`unknown format: ${fmt}`);
+  }
+
+  if (['dot', 'tree', 'svg'].includes(fmt)) {
+    throw new TypeError(`not a raster format: ${fmt}`);
+  }
+
+  const buf = await sharp(sbuf)[(fmt === 'jpg')? 'jpeg' : fmt]().toBuffer();
+  return buf;
+
+}
+
+
+
+
+
+// TODO typeify the formats
+async function write_sharp_raster(fname: string, svg_str: string, fmt: string) {
+
+  const buf = await sharp_raster( Buffer.from(svg_str), fmt );
+  fs.writeFileSync(outputTarget(fname, fmt), buf);
+  verbose_log(render_result(outputTarget(fname, fmt)));
+
+}
+
+
+
+
+
 async function output({ fname, data }) {
 
   verbose_log(render_message(fname));
@@ -218,13 +255,19 @@ async function output({ fname, data }) {
   if (app.svg) {
     fs.writeFileSync(outputTarget(fname, 'svg'), svg);
     verbose_log(render_result(outputTarget(fname, 'svg')));
+    ++written;
   }
 
-  if (app.png) {
-    const png_buf = await sharp(sbuf).png().toBuffer();
-    fs.writeFileSync(outputTarget(fname, 'png'), png_buf);
-    verbose_log(render_result(outputTarget(fname, 'png')));
-  }
+  // TODO handle tree, dot
+
+  const handles = rasterFormats.map( async thisFmt => {
+    if (app[thisFmt]) {
+      await write_sharp_raster( fname, svg, thisFmt );
+      ++written;
+    }
+  } );
+
+  await Promise.all(handles);
 
   if (written === 0) {
     // TODO FIXME there should be error handling here once the actual features
