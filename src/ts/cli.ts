@@ -5,11 +5,12 @@
 
 
 
-const fs   = require('fs');
+const fs    = require('fs');
 
-const glob = require('glob'),
-      app  = require('commander'),
-      a2c  = require('ansi-256-colors');
+const sharp = require('sharp'),
+      glob  = require('glob'),
+      app   = require('commander'),
+      a2c   = require('ansi-256-colors');
 
 
 import { version }           from '../../package.json';
@@ -49,6 +50,11 @@ const render_message = fname =>
     ? `${col(222, ' - ')}${col(123, "Rendering")} ${col(135, fname)}`
     : ` - Rendering ${fname}`;
 
+const render_result = fname =>
+  app.color
+    ? `${col(222, '   - ')}${col(123, "Output")} ${col(135, fname)}`
+    : `   - Output ${fname}`;
+
 
 
 
@@ -79,14 +85,14 @@ app
   .option('-c, --color',              'Use console color (default)')
   .option('-n, --nocolor',            'Do not use console color')
 
-  .option('--svg',                    'Produce output in SVG format (default if no formats specified)')
-  .option('--png',                    'Produce output in PNG format')
-  .option('--jpg',                    'Produce output in JPEG format, with a .jpg extension')
-  .option('--jpeg',                   'Produce output in JPEG format, with a .jpeg extension')
-  .option('--gif',                    'Produce output in GIF format')
-  .option('--webp',                   'Produce output in WEBP format')
-  .option('--tree',                   'Produce output in JSSM\'s internal parse tree format, with a .tree extension')
-  .option('--dot',                    'Produce output in GraphViz\'s DOT format')
+  .option('-S, --svg',                'Produce output in SVG format (default if no formats specified)')
+  .option('-P, --png',                'Produce output in PNG format')
+  .option('-J, --jpg',                'Produce output in JPEG format, with a .jpg extension')
+  .option('-E, --jpeg',               'Produce output in JPEG format, with a .jpeg extension')
+  .option('-G, --gif',                'Produce output in GIF format')
+  .option('-W, --webp',               'Produce output in WEBP format')
+  .option('-T, --tree',               'Produce output in JSSM\'s internal parse tree format, with a .tree extension')
+  .option('-D, --dot',                'Produce output in GraphViz\'s DOT format')
 
   .option('--inplace',                'Output where source was found (default)')
   .option('--todir <dir>',            'Output to a specified directory')
@@ -203,11 +209,24 @@ function outputTarget(origFname, kind) {
 async function output({ fname, data }) {
 
   verbose_log(render_message(fname));
-  const svg = await render(data);
+
+  const svg  = await render(data),
+        sbuf = Buffer.from(svg);
+
+  let written = 0;
 
   if (app.svg) {
     fs.writeFileSync(outputTarget(fname, 'svg'), svg);
-  } else {
+    verbose_log(render_result(outputTarget(fname, 'svg')));
+  }
+
+  if (app.png) {
+    const png_buf = await sharp(sbuf).png().toBuffer();
+    fs.writeFileSync(outputTarget(fname, 'png'), png_buf);
+    verbose_log(render_result(outputTarget(fname, 'png')));
+  }
+
+  if (written === 0) {
     // TODO FIXME there should be error handling here once the actual features
     // are filled out
   }
@@ -231,10 +250,10 @@ async function run() {
     console.log(error_text(`no files found matching source glob ${col(441, app.source)}`))
   }
 
-  files.map(fname => ({fname, data: `${fs.readFileSync(fname)}`}))
-       .map(output);
+  const o_promises = files.map(fname => ({fname, data: `${fs.readFileSync(fname)}`}))
+                          .map(output);
 
-  await Promise.all(files);
+  await Promise.all(o_promises);
 
   console.log('');
   verbose_log(`${col(345, "jssm-viz: ")}${col(135, `finished successfully`)}`);
