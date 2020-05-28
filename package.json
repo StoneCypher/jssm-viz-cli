@@ -1,6 +1,6 @@
 {
   "name": "jssm-viz-cli",
-  "version": "0.11.3",
+  "version": "0.11.4",
   "description": "jssm-viz-cli is a command-line interface for jssm-viz, a flowchart vizualizer for fsl finite state machines, using jssm to render FSMs. ",
   "main": "dist/js/cli.js",
   "directories": {
@@ -42,15 +42,15 @@
   },
   "homepage": "https://github.com/StoneCypher/jssm-viz-cli#readme",
   "dependencies": {
+    "commander": "^4.1.0",
+    "glob": "^7.1.6",
+    "jssm-viz": "^1.17.4",
     "sharp": "^0.24.1"
   },
   "devDependencies": {
     "@types/node": "^13.1.4",
     "@types/sharp": "^0.25.0",
     "ansi-256-colors": "^1.1.0",
-    "commander": "^4.1.0",
-    "glob": "^7.1.6",
-    "jssm-viz": "^1.17.4",
     "rimraf": "^3.0.0",
     "typescript": "^3.7.4"
   }
