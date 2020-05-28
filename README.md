@@ -17,7 +17,7 @@ See the [fsl.tools](https://fsl.tools/) website 😊
 
 ## Getting started
 
-Easiest approach is to install globally, which creates a command-line wrapper
+If you want to use this as a CLI in general, install globally, which creates a command-line wrapper:
 
 ```bash
 npm install -g jssm-viz
@@ -27,6 +27,12 @@ And now you can do things like
 
 ```bash
 jssm-viz -s traffic-light.fsl --png
+```
+
+If you'd prefer to use this as a CLI tool in a specific project, install it local to that project instead:
+
+```bash
+npm install --save-dev jssm-viz
 ```
 
 
