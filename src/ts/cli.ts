@@ -207,6 +207,9 @@ async function output({ fname, data }) {
 
   if (app.svg) {
     fs.writeFileSync(outputTarget(fname, 'svg'), svg);
+  } else {
+    // TODO FIXME there should be error handling here once the actual features
+    // are filled out
   }
 
 }
