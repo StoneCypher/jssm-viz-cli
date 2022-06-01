@@ -46,7 +46,7 @@
     "commander": "^4.1.0",
     "glob": "^7.1.6",
     "jssm-viz": "^1.17.4",
-    "sharp": "^0.24.1"
+    "sharp": "^0.30.5"
   },
   "devDependencies": {
     "@types/node": "^13.1.4",
