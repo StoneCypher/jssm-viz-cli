@@ -77,11 +77,22 @@ const log_if      = (text, clause) => clause? process.stdout.write(text + '\n') 
 
 
 
+function accumulateSource(value, previous) {
+  return previous.concat([value]);
+}
+
+
+
+
+
 app
 
   .version(version)
 
-  .option('-s, --source <glob>',      'The input source file, as a glob, such as foo.fsl or ./**/*.fsl')
+  .option('-i, --input <glob>',       'The input source file, as a glob, such as foo.fsl or ./**/*.fsl')
+  .option('-o, --output <string>',    'The output filename, as a string.  Omit and the input fname will be used')
+  .option('-O, --outputDir <string>', 'The output directory, as a string; otherwise predict the filenames as normal')
+  .option('-s, --source <string>',    'Provide source as a string', undefined, accumulateSource, [])
 
   .option('-w, --width <integer>',    'Set raster render width, in pixels')
 
