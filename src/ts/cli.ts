@@ -5,7 +5,8 @@
 
 
 
-const fs    = require('fs');
+const fs    = require('fs'),
+      path  = require('path');
 
 const sharp = require('sharp'),
       glob  = require('glob'),
@@ -24,6 +25,8 @@ import {
 
 
 
+
+const DEFAULT_SCALE = 3;
 
 const rasterFormats = ['png', 'jpg', 'jpeg', 'webp'],
       otherFormats  = ['svg', 'tree', 'dot'],
@@ -48,6 +51,8 @@ const at      = (s, i)              => parseInt(`${s}`.padStart(3, '0')[i]),
 const error_text = text => if_text(col(501, 'Error: '), text, 412) + `${col(441, " (see ")}${col(141, "jssm-viz --help")}${col(441, " for details)")}`,
       debug_text = text => if_text(col(113, 'Debug: '), text, 12),
       quiet_text = text => if_text(col(131, 'Quiet: '), text, 21);
+
+let scale, height, width;
 
 
 
@@ -89,34 +94,32 @@ app
 
   .version(version)
 
-  .option('-i, --input <glob>',       'The input source file, as a glob, such as foo.fsl or ./**/*.fsl')
-  .option('-o, --output <string>',    'The output filename, as a string.  Omit and the input fname will be used')
-  .option('-O, --outputDir <string>', 'The output directory, as a string; otherwise predict the filenames as normal')
-  .option('-s, --source <string>',    'Provide source as a string', undefined, accumulateSource, [])
+  .option('-i, --input <glob>',       'the input source file, as a glob, such as foo.fsl or ./**/*.fsl')
+  .option('-o, --output <string>',    'the output filename, as a string.  Omit and the input fname will be used')
+  .option('-O, --outputDir <string>', 'the output directory, as a string; otherwise predict the filenames as normal')
+  .option('-0, --outputCout',         'output to standard output / pipe 0 / cout; implies -q otherwise')
+  .option('-N, --nestedDir <string>', 'the output directory, retaining subdir relative to here; otherwise predict')
+  .option('-s, --source <string>',    'provide source as a string', undefined, accumulateSource, [])
 
-  .option('-w, --width <integer>',    'Set raster render width, in pixels')
+  .option('-w, --width <integer>',    'set raster render width, in pixels (exclusive of height or scale)')
+  .option('-h, --height <integer>',   'set raster render height, in pixels (exclusive of width or scale)')
+  .option('-x, --scale <number>',     `set raster scale, in pixels (exclusive of width or height, default ${DEFAULT_SCALE})`)
 
-  .option('-d, --debug',              'Log extensively to console')
-  .option('-v, --verbose',            'Log to console normally (default)')
-  .option('-q, --quiet',              'Only log to console on error')
-  .option('-z, --silent',             'Do not log to console at all')
+  .option('-d, --debug',              'log extensively to console')
+  .option('-v, --verbose',            'log to console normally (default)')
+  .option('-q, --quiet',              'only log to console on error')
+  .option('-z, --silent',             'do not log to console at all')
 
-  .option('-c, --color',              'Use console color (default)')
-  .option('-n, --nocolor',            'Do not use console color')
+  .option('-c, --color',              'use console color (default)')
+  .option('-n, --nocolor',            'do not use console color')
 
-  .option('-S, --svg',                'Produce output in SVG format (default if no formats specified)')
-  .option('-P, --png',                'Produce output in PNG format')
-  .option('-J, --jpg',                'Produce output in JPEG format, with a .jpg extension')
-  .option('-E, --jpeg',               'Produce output in JPEG format, with a .jpeg extension')
-  .option('-W, --webp',               'Produce output in WEBP format')
-  .option('-T, --tree',               'Produce output in JSSM\'s internal parse tree format, with a .tree extension')
-  .option('-D, --dot',                'Produce output in GraphViz\'s DOT format')
-
-  .option('--inplace',                'Output where source was found (default)')
-  .option('--todir <dir>',            'Output to a specified directory')
-  .option('--toinplacedir <dir>',     'Output a matching tree from source to a specified directory')
-  .option('--tosourcenameddir <dir>', 'Output slugged names to a specified directory')
-  .option('--topipe',                 'Output to pipe 0 (aka cout, stdout)');
+  .option('-S, --svg',                'produce output in SVG format (default if no formats specified)')
+  .option('-P, --png',                'produce output in PNG format')
+  .option('-J, --jpg',                'produce output in JPEG format, with a .jpg extension')
+  .option('-E, --jpeg',               'produce output in JPEG format, with a .jpeg extension')
+  .option('-W, --webp',               'produce output in WEBP format')
+  .option('-T, --tree',               'produce output in JSSM\'s internal parse tree format, with a .tree extension')
+  .option('-D, --dot',                'produce output in GraphViz\'s DOT format')
 
 app.parse(process.argv);
 
@@ -158,6 +161,17 @@ function validate_args() {
   if (colors.length === 0) {
     app.color = true;
   }
+
+  const sizes = present_on_app(['height', 'width', 'scale']);
+  if (sizes.length > 1) {
+    console.log(error_text(`${english_list(['height', 'width', 'scale'])} are mutually exclusive.  Please choose at most one.`));
+    process.exit(1);
+  }
+
+  if (sizes.length === 0) { scale  = DEFAULT_SCALE; }
+  if (app.scale)          { scale  = app.scale;     }
+  if (app.height)         { height = app.height;    }
+  if (app.width)          { width  = app.width;     }
 
   const noises = present_on_app(noise);
   if (noises.length > 1) {
@@ -212,18 +226,177 @@ function outputTarget(origFname, kind) {
 
 
 
-async function sharp_raster(sbuf, fmt) {
+function pull_size_from_svg(svg: string) {
 
-  if (!( imgFormats.includes(fmt) )) {
-    throw new TypeError(`unknown format: ${fmt}`);
+  const inter      = `${svg}`.split('<svg width="'),
+        after      = inter[1].split('pt" height="'),
+        final      = after[1].split('pt"'),
+
+        svg_width  = Number(after[0]),
+        svg_height = Number(final[0]);
+
+  return { svg_width, svg_height };
+
+}
+
+
+
+
+
+async function sharp_raster(sbuf, target_fmt: string, options?: object | undefined) {
+
+  process.env.FONTCONFIG_PATH= `/c/Users/john/projects/jssm-viz-cli/src/fonts`;
+//process.env.FONTCONFIG_PATH= `${__filename}/fonts`;
+
+  const u_opt = (options === undefined)
+                  ? {}
+                  : options;
+
+  if (!( imgFormats.includes(target_fmt) )) {
+    throw new TypeError(`unknown format: ${target_fmt}`);
   }
 
-  if (['dot', 'tree', 'svg'].includes(fmt)) {
-    throw new TypeError(`not a raster format: ${fmt}`);
+  if (['dot', 'tree', 'svg'].includes(target_fmt)) {
+    throw new TypeError(`not a raster format: ${target_fmt}`);
   }
 
-  const buf = await sharp(sbuf)[(fmt === 'jpg')? 'jpeg' : fmt]().toBuffer();
+  const { svg_width, svg_height } = pull_size_from_svg(sbuf);
+
+  let final_width  = svg_width,
+      final_height = svg_height;
+
+  if (scale !== undefined) {
+    final_height = Math.ceil(final_height * scale);
+    final_width  = Math.ceil(final_width  * scale);
+  } else if (height !== undefined) {
+    final_height = Math.ceil(height);
+    final_width  = Math.ceil((height / svg_height) * width);
+  } else if (width !== undefined) {
+    final_width  = Math.ceil(width);
+    final_height = Math.ceil((width / svg_width) * height);
+  }
+
+  const ufmt      = (target_fmt === 'jpg')? 'jpeg' : target_fmt,
+        sharp_buf = await sharp(sbuf)
+                            .resize({
+                              width  : final_width,
+                              height : final_height,
+                              fit    : 'contain'
+                            });
+
+  const buf       = sharp_buf[ufmt]().toBuffer();
+
   return buf;
+
+}
+
+
+
+
+
+// const to_inject = `
+//   <style type="text/css">
+//     @font-face {
+//       font-family : Open Sans;
+//       src         : '${__dirname}/fonts/OpenSans-Regular.ttf';
+//     }
+//   </style>
+// `;
+
+// const to_inject = `
+//   <style type="text/css">
+//     @font-face {
+//       font-family : 'Open Sans';
+//       src         : url('../../dist/js/fonts/OpenSans-Regular.ttf');
+//     }
+//   </style>
+// `;
+
+// const to_inject = `
+//   <style type="text/css">
+//     @font-face {
+//       font-family : 'Open Sans';
+//       src         : url('${path.normalize(__dirname).replace(/\\/g,'\\\\')}/fonts/OpenSans-Regular.ttf');
+//     }
+//   </style>
+// `;
+
+// const to_inject = `
+//   <style type="text/css">
+//     @font-face {
+//       font-family : 'Open Sans';
+//       src         : url('C:\\Users\\john\\projects\\jssm-viz-cli\\dist\\js\\fonts\\OpenSans-Regular.ttf');
+//     }
+//   </style>
+// `;
+
+// const to_inject = `
+//   <style type="text/css">
+//     @font-face {
+//       font-family : Open Sans;
+//       src         : url('../../dist/js/fonts/OpenSans-Regular.ttf');
+//     }
+//   </style>
+// `;
+
+// const to_inject = `
+//   <style type="text/css">
+//     @font-face {
+//       font-family : Open Sans;
+//       src         : url('./OpenSans-Regular.ttf');
+//     }
+//   </style>
+// `;
+
+// const to_inject = `
+//   <style type="text/css">
+//     @font-face {
+//       font-family : Open Sans;
+//       src         : url('.\\\\OpenSans-Regular.ttf');
+//     }
+//   </style>
+// `;
+
+// const to_inject = `
+//   <style type="text/css">
+//     @font-face {
+//       font-family : Open Sans;
+//       src         : url('OpenSans-Regular.ttf');
+//     }
+//   </style>
+// `;
+
+// const to_inject = `
+//   <style type="text/css">
+//     @font-face {
+//       font-family : Open Sans;
+//       src         : OpenSans-Regular.ttf;
+//     }
+//   </style>
+// `;
+
+const to_inject = `
+  <style type="text/css">
+    @font-face {
+      font-family : Bonk;
+      src         : url('./Impact.ttf');
+    }
+  </style>
+`;
+
+
+const font_split_token = 'http://www.w3.org/1999/xlink">';
+
+function inject_css(svg_str) {
+
+  const parts = svg_str.split(font_split_token);
+  parts[1]    = to_inject + parts[1];
+  const whole = parts.join(font_split_token);
+
+//  return whole;
+//  return whole.replace(/font-family="Open Sans"/g, `font-family="'Open Sans'"`);
+  // return whole.replace(/font-family="Open Sans"/g, `font-family="Impact"`);
+  return whole.replace(/font-family="Open Sans"/g, `font-family="Open Sans, Helvetica Neue, Helvetica, Arial, sans-serif"`);
 
 }
 
@@ -234,7 +407,7 @@ async function sharp_raster(sbuf, fmt) {
 // TODO typeify the formats
 async function write_sharp_raster(fname: string, svg_str: string, fmt: string) {
 
-  const buf = await sharp_raster( Buffer.from(svg_str), fmt );
+  const buf = await sharp_raster( Buffer.from( svg_str ), fmt );
   fs.writeFileSync(outputTarget(fname, fmt), buf);
   verbose_log(render_result(outputTarget(fname, fmt)));
 
@@ -248,7 +421,8 @@ async function output({ fname, data }) {
 
   verbose_log(render_message(fname));
 
-  const svg  = await fsl_to_svg_string(data),
+  const svgo = await fsl_to_svg_string(data),
+        svg  = inject_css(svgo),
         dot  = await fsl_to_dot(data),
         sbuf = Buffer.from(svg);
 
@@ -266,13 +440,15 @@ async function output({ fname, data }) {
     ++written;
   }
 
-  // TODO handle tree, dot
+  // TODO handle tree
 
   const handles = rasterFormats.map( async thisFmt => {
+
     if (app[thisFmt]) {
       await write_sharp_raster( fname, svg, thisFmt );
       ++written;
     }
+
   } );
 
   await Promise.all(handles);
@@ -291,6 +467,7 @@ async function output({ fname, data }) {
 async function run() {
 
   validate_args();
+  console.log(`${col(12, 'jssm-viz cli ')}${col(111, `version ${version}`)}`);
 
   console.log('');
   verbose_log(`${col(345, "jssm-viz: ")}${col(135, 'targetting ')}${col(24, english_list(present_on_app(imgFormats)))}`);
