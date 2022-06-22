@@ -97,7 +97,7 @@ app
   .option('-i, --input <glob>',       'the input source file, as a glob, such as foo.fsl or ./**/*.fsl')
   .option('-o, --output <string>',    'the output filename, as a string.  Omit and the input fname will be used')
   .option('-O, --outputDir <string>', 'the output directory, as a string; otherwise predict the filenames as normal')
-  .option('-0, --outputCout',         'output to standard output / pipe 0 / cout; implies -q otherwise')
+  .option('-0, --outputConsole',      'output to standard output / pipe 0 / cout; implies -q otherwise')
   .option('-N, --nestedDir <string>', 'the output directory, retaining subdir relative to here; otherwise predict')
   .option('-s, --source <string>',    'provide source as a string', undefined, accumulateSource, [])
 
@@ -187,8 +187,8 @@ function validate_args() {
 
   const if_colored = colorer => app.color? colorer : ( x => x );
 
-  if (!(app.source)) {
-    console.log(error_text("must specify a source file or source glob"));
+  if (!(app.input)) {
+    console.log(error_text("must specify a source file or source glob with -i"));
     process.exit(1);
   }
 
@@ -472,10 +472,10 @@ async function run() {
   console.log('');
   verbose_log(`${col(345, "jssm-viz: ")}${col(135, 'targetting ')}${col(24, english_list(present_on_app(imgFormats)))}`);
 
-  const files = glob.sync(app.source);
+  const files = glob.sync(app.input);
 
   if (files.length === 0) {
-    console.log(error_text(`no files found matching source glob ${col(441, app.source)}`))
+    console.log(error_text(`no files found matching source glob ${col(441, app.input)}`))
   }
 
   const o_promises = files.map(fname => ({fname, data: `${fs.readFileSync(fname)}`}))

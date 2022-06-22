@@ -1,6 +1,6 @@
 {
   "name": "jssm-viz-cli",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "jssm-viz-cli is a command-line interface for jssm-viz, a flowchart vizualizer for fsl finite state machines, using jssm to render FSMs. ",
   "main": "dist/js/cli.js",
   "directories": {
@@ -13,8 +13,9 @@
     "clean": "rimraf -f build/ && rimraf -f dist/ && rimraf -f docs/ && mkdir build && mkdir dist && cd dist && mkdir js && cd .. && mkdir docs",
     "docs": "cp src/svg/traffic-light-example.svg docs/",
     "dist": "cp build/src/ts/cli.* dist/js/ && cp src/js/jssm-viz.js dist/js/ && cd dist/js && mkdir fonts && cd ../.. && cp ./src/fonts/* ./dist/js/fonts/",
+    "changelog": "better_git_changelog -b",
     "typescript": "tsc --build tsconfig.json",
-    "build": "npm run clean && npm run typescript && npm run dist && npm run docs",
+    "build": "npm run clean && npm run typescript && npm run dist && npm run changelog && npm run docs",
     "test": "echo Temporarily skipped"
   },
   "repository": {

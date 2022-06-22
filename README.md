@@ -20,19 +20,43 @@ See the [fsl.tools](https://fsl.tools/) website 😊
 If you want to use this as a CLI in general, install globally, which creates a command-line wrapper:
 
 ```bash
-npm install -g jssm-viz
+npm install -g jssm-viz-cli
 ```
 
 And now you can do things like
 
 ```bash
-jssm-viz -s traffic-light.fsl --png
+jssm-viz -i traffic-light.fsl --png
 ```
+
+or
+
+```bash
+jssm-viz -i traffic-light.fsl --png
+```
+
+
+
+
+
+<br/><br/>
+
+## Scripting
 
 If you'd prefer to use this as a CLI tool in a specific project, install it local to that project instead:
 
 ```bash
-npm install --save-dev jssm-viz
+npm install --save jssm-viz
+```
+
+And now you can add things to your scripts block in `package.json` like
+
+```javascript
+{
+  scripts: {
+    "graph-fsl": "jssm-viz -i ./src/fsl/*.fsl --jpeg"
+  }
+}
 ```
 
 
