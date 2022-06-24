@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-69 merges; Changlogging the last 10 commits; Full changelog at [CHANGELOG.long.md](CHANGELOG.long.md)
+71 merges; Changlogging the last 10 commits; Full changelog at [CHANGELOG.long.md](CHANGELOG.long.md)
 
 
 
@@ -14,6 +14,36 @@ Published tags:
 
 
 
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - 6/24/2022 2:36:54 PM
+
+Commit [bc013ddbf667d84fbd04177ca2394c7fbff7cff1](https://github.com/StoneCypher/jssm/commit/bc013ddbf667d84fbd04177ca2394c7fbff7cff1)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * this should only be testing ubuntu 18 in main path too
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - 6/24/2022 2:35:37 PM
+
+Commit [d74646c9d441b8be1c8aec8a34623bfe467ed4e3](https://github.com/StoneCypher/jssm/commit/d74646c9d441b8be1c8aec8a34623bfe467ed4e3)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * this should only be testing ubuntu 18
 
 
 
@@ -168,39 +198,3 @@ updated-dependencies:
   dependency-type: indirect
 ...
   * Signed-off-by: dependabot[bot] <support@github.com>
-
-
-
-
-&nbsp;
-
-&nbsp;
-
-## [Untagged] - 10/24/2021 10:47:10 AM
-
-Commit [42e4f461916d28a4c0a679bd9eff63c7ec8fdee0](https://github.com/StoneCypher/jssm/commit/42e4f461916d28a4c0a679bd9eff63c7ec8fdee0)
-
-Author: `John Haugeland <stonecypher@gmail.com>`
-
-Merges [7cb3db3, 3326526]
-
-  * Merge pull request #24 from StoneCypher/dependabot/npm_and_yarn/ini-1.3.8
-  * Bump ini from 1.3.5 to 1.3.8
-
-
-
-
-&nbsp;
-
-&nbsp;
-
-## [Untagged] - 10/24/2021 10:46:48 AM
-
-Commit [7cb3db3a175200a8440def6058151454c6a04b24](https://github.com/StoneCypher/jssm/commit/7cb3db3a175200a8440def6058151454c6a04b24)
-
-Author: `John Haugeland <stonecypher@gmail.com>`
-
-Merges [17e7345, d5ff9d9]
-
-  * Merge pull request #27 from StoneCypher/dependabot/npm_and_yarn/color-string-1.6.0
-  * Bump color-string from 1.5.3 to 1.6.0

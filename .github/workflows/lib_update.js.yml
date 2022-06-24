@@ -11,27 +11,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - node-version: 18.x   # fastest, so run first, to error fast
-            os: ubuntu-latest
-          - node-version: 18.x   # slowest, so run next. sort by slowest from here to get earliest end through parallelism
-            os: macos-latest
-          # - node-version: 18.x   # finish check big-3 on latest current
-          #   os: windows-latest
-          - node-version: 10.x  # lastly check just ubuntu on historic node versions because speed, oldest (slowest) first
-            os: ubuntu-latest
-          - node-version: 11.x
-            os: ubuntu-latest
-          - node-version: 12.x
-            os: ubuntu-latest
-          - node-version: 13.x
-            os: ubuntu-latest
-          - node-version: 14.x
-            os: ubuntu-latest
-          - node-version: 15.x
-            os: ubuntu-latest
-          - node-version: 16.x
-            os: ubuntu-latest
-          - node-version: 17.x
+          - node-version: 18.x   # the action is ubuntu node 18 only, so matrix testing makes no sense
             os: ubuntu-latest
 
     runs-on: ${{ matrix.os }}
@@ -65,43 +45,9 @@ jobs:
 
 
 
-  remote-invoked-windows-build:
-
-    strategy:
-      matrix:
-        include:
-          - node-version: 18.x   # finish check big-3 on latest current
-            os: windows-latest
-
-    runs-on: ${{ matrix.os }}
-
-    steps:
-    - uses: actions/checkout@v3
-    - name: Node ${{ matrix.node-version }} ${{ matrix.os }} remote build
-      if: github.event.action == 'upgrade_jssm_viz'
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18.x
-        cache: 'npm'
-    - name: Remote-build
-      run: |
-        echo Identifying to Git
-        git config --global user.email "stonecypher@users.noreply.github.com"
-        git config --global user.name "John Haugeland through Github Actions"
-        echo "Attempting automated upgrade to jssm-viz version '${{ github.event.client_payload.lib_version }}' "
-        echo "  - Installing base"
-        npm install
-        echo "  - Upgrading jssm-viz"
-        npm uninstall --save jssm-viz && npm install --save jssm-viz@${{ github.event.client_payload.lib_version }}
-        npm version ${{ github.event.client_payload.lib_version }} -f
-        echo "  - Running new build"
-        npm run build
-
-
-
   completion:
 
-    needs: [remote-invoked-build, remote-invoked-windows-build]
+    needs: [remote-invoked-build]
     runs-on: ubuntu-latest
 
     steps:

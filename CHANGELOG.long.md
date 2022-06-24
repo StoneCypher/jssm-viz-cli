@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-69 merges
+71 merges
 
 
 
@@ -14,6 +14,36 @@ Published tags:
 
 
 
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - 6/24/2022 2:36:54 PM
+
+Commit [bc013ddbf667d84fbd04177ca2394c7fbff7cff1](https://github.com/StoneCypher/jssm/commit/bc013ddbf667d84fbd04177ca2394c7fbff7cff1)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * this should only be testing ubuntu 18 in main path too
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - 6/24/2022 2:35:37 PM
+
+Commit [d74646c9d441b8be1c8aec8a34623bfe467ed4e3](https://github.com/StoneCypher/jssm/commit/d74646c9d441b8be1c8aec8a34623bfe467ed4e3)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * this should only be testing ubuntu 18
 
 
 
