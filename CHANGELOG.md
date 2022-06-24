@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-68 merges; Changlogging the last 10 commits; Full changelog at [CHANGELOG.long.md](CHANGELOG.long.md)
+69 merges; Changlogging the last 10 commits; Full changelog at [CHANGELOG.long.md](CHANGELOG.long.md)
 
 
 
@@ -14,6 +14,21 @@ Published tags:
 
 
 
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - 6/21/2022 6:45:10 PM
+
+Commit [2a712877c9cd124ee38c2c8a6a3b16ae3c072fe5](https://github.com/StoneCypher/jssm/commit/2a712877c9cd124ee38c2c8a6a3b16ae3c072fe5)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * Prep for full chain auto-bump
 
 
 
@@ -189,22 +204,3 @@ Merges [17e7345, d5ff9d9]
 
   * Merge pull request #27 from StoneCypher/dependabot/npm_and_yarn/color-string-1.6.0
   * Bump color-string from 1.5.3 to 1.6.0
-
-
-
-
-&nbsp;
-
-&nbsp;
-
-## [Untagged] - 10/24/2021 9:39:19 AM
-
-Commit [332652612e504da24456a03bb0a715aada74268e](https://github.com/StoneCypher/jssm/commit/332652612e504da24456a03bb0a715aada74268e)
-
-Author: `dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>`
-
-  * Bump ini from 1.3.5 to 1.3.8
-  * Bumps [ini](https://github.com/isaacs/ini) from 1.3.5 to 1.3.8.
-- [Release notes](https://github.com/isaacs/ini/releases)
-- [Commits](https://github.com/isaacs/ini/compare/v1.3.5...v1.3.8)
-  * Signed-off-by: dependabot[bot] <support@github.com>
