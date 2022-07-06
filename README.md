@@ -116,11 +116,11 @@ To write four images and two pieces of source to disk, run
 jssm-viz -s traffic-light.fsl --svg --png --jpeg --webp --dot --tree
 ```
 
-This will produce `traffic-light.svg`, `traffic-light.png`, `traffic-light.jpeg`, `traffic-light.webp`, and two special cases, `traffic-light.dot`, which is the intermediate stage that's run through [graphviz](https://www.graphviz.org/) to produce the final graph, and a parse tree in `jssm`'s internal format, in `json`.
+This will produce `traffic-light.fsl.svg`, `traffic-light.fsl.png`, `traffic-light.fsl.jpeg`, `traffic-light.fsl.webp`, and two special cases: `traffic-light.fsl.dot`, which is the intermediate stage that's run through [graphviz](https://www.graphviz.org/) to produce the final graph, and a parse tree in `jssm`'s internal format, in `json`, and `traffic-light.fsl.tree`, the JSON parsing of the source to the intermediate data state.
 
 If one or more of the format flags are provided, those are the formats which will be produced.  If none are provided, `svg` will be assumed.
 
-There is also a `--jpg`, which produces JPEGs with the extension `.jpg`.  Internally it's treated like a different format, so, if you specify both `--jpg` and `--jpeg`, you'll get two images.
+There is also a `--jpg`, which produces JPEGs with the extension `.jpg`.  Internally it's treated like a different format, so, if you specify both `--jpg` and `--jpeg`, you'll get two matching images under slightly different filenames.
 
 Images will be placed in the same directory as the source, unless otherwise specified.  This can be relevant if you're using globs to pick up multiple source files, by example.
 
@@ -153,6 +153,8 @@ By example, if you want to render all machines from the current directory downwa
 ```bash
 jssm-viz -s ./**/*.fsl --png --svg
 ```
+
+This will produce two images per source file.
 
 
 
